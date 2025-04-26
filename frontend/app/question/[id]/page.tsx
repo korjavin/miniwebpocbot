@@ -1,78 +1,77 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import { useUser } from '@/contexts/UserContext';
 import { useQuestions } from '@/contexts/QuestionContext';
 import { getTelegramWebApp, initTelegramWebApp, isTelegramWebAppAvailable } from '@/lib/telegram';
 import Link from 'next/link';
+import Navigation from '@/components/Navigation';
 
 export default function QuestionPage() {
-  const router = useRouter();
   const params = useParams();
   const questionId = params.id as string;
-  
+
   const { user, loading: userLoading, error: userError, refreshUser } = useUser();
-  const { 
-    currentQuestion, 
-    setCurrentQuestionId, 
-    userBet, 
-    loadingBet,
+  const {
+    currentQuestion,
+    setCurrentQuestionId,
+    userBet,
     refreshQuestions
   } = useQuestions();
-  
+
   const [selectedOption, setSelectedOption] = useState<string>('');
   const [betAmount, setBetAmount] = useState<number>(10);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  
+
   useEffect(() => {
     // Initialize Telegram WebApp
     if (isTelegramWebAppAvailable()) {
       initTelegramWebApp();
     }
-    
+
     // Set the current question ID
     setCurrentQuestionId(questionId);
-    
+
     // Cleanup
     return () => {
       setCurrentQuestionId(null);
     };
   }, [questionId, setCurrentQuestionId]);
-  
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!user || !currentQuestion) {
       setError('User or question not available');
       return;
     }
-    
+
     if (!selectedOption) {
       setError('Please select an option');
       return;
     }
-    
+
     if (betAmount <= 0) {
       setError('Bet amount must be greater than 0');
       return;
     }
-    
+
     if (betAmount > user.balance) {
       setError('Insufficient balance');
       return;
     }
-    
+
     setIsSubmitting(true);
     setError(null);
-    
+
     try {
       // Get Telegram WebApp data for verification
       const webApp = getTelegramWebApp();
       const initData = webApp?.initData || '';
-      
+
       // Call the API to place the bet
       const response = await fetch('/api/bets', {
         method: 'POST',
@@ -87,19 +86,19 @@ export default function QuestionPage() {
           initData,
         }),
       });
-      
+
       const data = await response.json();
-      
+
       if (!response.ok) {
         throw new Error(data.error || 'Failed to place bet');
       }
-      
+
       // Update the user and refresh questions
       await refreshUser();
       await refreshQuestions();
-      
+
       setSuccess('Your bet has been placed successfully!');
-      
+
       // Close the WebApp after a short delay
       setTimeout(() => {
         if (isTelegramWebAppAvailable()) {
@@ -115,7 +114,7 @@ export default function QuestionPage() {
       setIsSubmitting(false);
     }
   };
-  
+
   if (userLoading || !currentQuestion) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -126,7 +125,7 @@ export default function QuestionPage() {
       </div>
     );
   }
-  
+
   if (userError) {
     return (
       <div className="flex items-center justify-center min-h-screen p-4">
@@ -140,7 +139,7 @@ export default function QuestionPage() {
       </div>
     );
   }
-  
+
   if (!currentQuestion) {
     return (
       <div className="min-h-screen p-4 max-w-md mx-auto">
@@ -154,22 +153,20 @@ export default function QuestionPage() {
       </div>
     );
   }
-  
+
   return (
-    <div className="min-h-screen p-4 max-w-md mx-auto">
-      <header className="mb-6">
-        <div className="flex justify-between items-center mb-4">
-          <Link href="/" className="text-blue-600 hover:underline">
-            ← Back to Questions
-          </Link>
-          {user && (
-            <p className="font-semibold">
-              Balance: <span className="text-green-600">{user.balance} points</span>
-            </p>
-          )}
-        </div>
-        <h1 className="text-2xl font-bold">{currentQuestion.question_text}</h1>
-      </header>
+    <div className="min-h-screen">
+      <Navigation />
+
+      <div className="p-4 max-w-md mx-auto">
+        <header className="mb-6">
+          <div className="flex justify-between items-center mb-4">
+            <Link href="/" className="text-blue-600 hover:underline">
+              ← Back to Questions
+            </Link>
+          </div>
+          <h1 className="text-2xl font-bold">{currentQuestion.question_text}</h1>
+        </header>
 
       <main>
         {currentQuestion.status === 'closed' ? (
@@ -212,19 +209,19 @@ export default function QuestionPage() {
         ) : (
           <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow mb-6">
             <h2 className="text-xl font-semibold mb-4">Place Your Bet</h2>
-            
+
             {error && (
               <div className="bg-red-50 p-3 rounded mb-4 text-red-600 text-sm">
                 {error}
               </div>
             )}
-            
+
             {success && (
               <div className="bg-green-50 p-3 rounded mb-4 text-green-600 text-sm">
                 {success}
               </div>
             )}
-            
+
             <div className="mb-4">
               <label className="block text-gray-700 mb-2">Select an option:</label>
               <div className="space-y-2">
@@ -243,7 +240,7 @@ export default function QuestionPage() {
                 ))}
               </div>
             </div>
-            
+
             <div className="mb-6">
               <label className="block text-gray-700 mb-2">Bet amount:</label>
               <div className="flex items-center">
@@ -258,29 +255,29 @@ export default function QuestionPage() {
                 <span className="ml-2">points</span>
               </div>
               <div className="mt-2 flex justify-between">
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   onClick={() => setBetAmount(10)}
                   className="px-2 py-1 text-sm border rounded hover:bg-gray-50"
                 >
                   10
                 </button>
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   onClick={() => setBetAmount(50)}
                   className="px-2 py-1 text-sm border rounded hover:bg-gray-50"
                 >
                   50
                 </button>
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   onClick={() => setBetAmount(100)}
                   className="px-2 py-1 text-sm border rounded hover:bg-gray-50"
                 >
                   100
                 </button>
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   onClick={() => setBetAmount(user?.balance || 0)}
                   className="px-2 py-1 text-sm border rounded hover:bg-gray-50"
                 >
@@ -288,7 +285,7 @@ export default function QuestionPage() {
                 </button>
               </div>
             </div>
-            
+
             <button
               type="submit"
               disabled={isSubmitting || !selectedOption}
@@ -298,7 +295,7 @@ export default function QuestionPage() {
             </button>
           </form>
         )}
-        
+
         <div className="bg-gray-50 p-4 rounded-lg">
           <h3 className="font-medium mb-2">How it works:</h3>
           <ul className="text-sm text-gray-600 space-y-1">
@@ -309,6 +306,7 @@ export default function QuestionPage() {
           </ul>
         </div>
       </main>
+      </div>
     </div>
   );
 }
