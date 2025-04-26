@@ -300,7 +300,7 @@ export default function QuestionPage() {
           <h3 className="font-medium mb-2">How it works:</h3>
           <ul className="text-sm text-gray-600 space-y-1">
             <li>• Select an option and bet your points</li>
-            <li>• If you guess correctly, you'll win points from the losing bets</li>
+            <li>• If you guess correctly, you&apos;ll win points from the losing bets</li>
             <li>• Your winnings are proportional to your bet amount</li>
             <li>• You can only place one bet per question</li>
           </ul>

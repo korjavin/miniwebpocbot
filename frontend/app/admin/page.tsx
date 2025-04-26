@@ -70,18 +70,18 @@ export default function AdminPage() {
   // Create a new question
   const createQuestion = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Validate
     if (!newQuestion.question_text.trim()) {
       setError('Question text is required');
       return;
     }
-    
+
     if (newQuestion.options.some(opt => !opt.trim())) {
       setError('All options must have a value');
       return;
     }
-    
+
     try {
       const data = {
         question_text: newQuestion.question_text,
@@ -89,16 +89,16 @@ export default function AdminPage() {
         status: newQuestion.status,
         correct_option: null
       };
-      
-      const record = await pb.collection('questions').create(data);
-      
+
+      await pb.collection('questions').create(data);
+
       setSuccessMessage('Question created successfully!');
       setNewQuestion({
         question_text: '',
         options: ['', ''],
         status: 'open'
       });
-      
+
       fetchQuestions();
     } catch (err) {
       console.error('Error creating question:', err);
@@ -113,7 +113,7 @@ export default function AdminPage() {
         status: 'closed',
         correct_option: correctOption
       });
-      
+
       setSuccessMessage('Question closed successfully!');
       fetchQuestions();
     } catch (err) {
@@ -128,7 +128,7 @@ export default function AdminPage() {
       setError('Channel ID is required');
       return;
     }
-    
+
     try {
       const response = await fetch('/api/telegram/post-question', {
         method: 'POST',
@@ -140,13 +140,13 @@ export default function AdminPage() {
           channelId
         })
       });
-      
+
       const data = await response.json();
-      
+
       if (!response.ok) {
         throw new Error(data.error || 'Failed to post question');
       }
-      
+
       setSuccessMessage('Question posted to Telegram successfully!');
     } catch (err) {
       console.error('Error posting question to Telegram:', err);
@@ -160,7 +160,7 @@ export default function AdminPage() {
       setError('Channel ID is required');
       return;
     }
-    
+
     try {
       const response = await fetch('/api/telegram/post-result', {
         method: 'POST',
@@ -172,13 +172,13 @@ export default function AdminPage() {
           channelId
         })
       });
-      
+
       const data = await response.json();
-      
+
       if (!response.ok) {
         throw new Error(data.error || 'Failed to post results');
       }
-      
+
       setSuccessMessage('Results posted to Telegram successfully!');
     } catch (err) {
       console.error('Error posting results to Telegram:', err);
@@ -196,8 +196,8 @@ export default function AdminPage() {
       {error && (
         <div className="bg-red-50 p-4 rounded-lg mb-6 text-red-600">
           {error}
-          <button 
-            className="ml-2 text-sm underline" 
+          <button
+            className="ml-2 text-sm underline"
             onClick={() => setError(null)}
           >
             Dismiss
@@ -208,8 +208,8 @@ export default function AdminPage() {
       {successMessage && (
         <div className="bg-green-50 p-4 rounded-lg mb-6 text-green-600">
           {successMessage}
-          <button 
-            className="ml-2 text-sm underline" 
+          <button
+            className="ml-2 text-sm underline"
             onClick={() => setSuccessMessage(null)}
           >
             Dismiss
@@ -230,7 +230,7 @@ export default function AdminPage() {
               placeholder="e.g., Will it rain tomorrow?"
             />
           </div>
-          
+
           <div className="mb-4">
             <label className="block text-gray-700 mb-2">Options:</label>
             {newQuestion.options.map((option, index) => (
@@ -260,7 +260,7 @@ export default function AdminPage() {
               Add Option
             </button>
           </div>
-          
+
           <div className="mb-6">
             <label className="block text-gray-700 mb-2">Status:</label>
             <select
@@ -272,7 +272,7 @@ export default function AdminPage() {
               <option value="closed">Closed</option>
             </select>
           </div>
-          
+
           <button
             type="submit"
             className="w-full bg-blue-600 text-white py-3 rounded font-medium hover:bg-blue-700"
@@ -304,7 +304,7 @@ export default function AdminPage() {
 
       <div>
         <h2 className="text-xl font-semibold mb-4">Manage Questions</h2>
-        
+
         {loading ? (
           <div className="text-center p-8">Loading questions...</div>
         ) : questions.length === 0 ? (
@@ -315,26 +315,26 @@ export default function AdminPage() {
         ) : (
           <div className="space-y-4">
             {questions.map((question) => (
-              <div 
-                key={question.id} 
+              <div
+                key={question.id}
                 className="bg-white p-6 rounded-lg shadow"
               >
                 <div className="flex justify-between items-start mb-4">
                   <h3 className="font-semibold text-lg">{question.question_text}</h3>
                   <span className={`px-2 py-1 rounded text-sm ${
-                    question.status === 'open' 
-                      ? 'bg-green-100 text-green-800' 
+                    question.status === 'open'
+                      ? 'bg-green-100 text-green-800'
                       : 'bg-gray-100 text-gray-800'
                   }`}>
                     {question.status}
                   </span>
                 </div>
-                
+
                 <div className="mb-4">
                   <h4 className="font-medium mb-2">Options:</h4>
                   <ul className="space-y-1">
                     {question.options.map((option, index) => (
-                      <li 
+                      <li
                         key={index}
                         className={`p-2 rounded ${
                           question.correct_option === option
@@ -355,7 +355,7 @@ export default function AdminPage() {
                     ))}
                   </ul>
                 </div>
-                
+
                 <div className="flex flex-wrap gap-2">
                   {question.status === 'open' && (
                     <button
@@ -366,7 +366,7 @@ export default function AdminPage() {
                       Post to Telegram
                     </button>
                   )}
-                  
+
                   {question.status === 'closed' && question.correct_option && (
                     <button
                       onClick={() => postResultsToTelegram(question.id)}
@@ -376,8 +376,8 @@ export default function AdminPage() {
                       Post Results to Telegram
                     </button>
                   )}
-                  
-                  <Link 
+
+                  <Link
                     href={`/question/${question.id}`}
                     className="px-3 py-2 bg-gray-100 text-gray-800 rounded hover:bg-gray-200"
                   >
