@@ -90,6 +90,7 @@
 ## CI/CD
 - ✅ GitHub Actions for CI
   - ✅ Create workflow file
+  - ✅ Fix backend Dockerfile for CI
   - ✅ Test workflow ready for execution
 
 ## Documentation
