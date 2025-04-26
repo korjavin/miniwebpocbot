@@ -1,3 +1,5 @@
+'use client';
+
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { getOpenQuestions, getQuestion, getUserBetForQuestion, Question, Bet } from '../lib/pocketbase';
 import { useUser } from './UserContext';
@@ -100,12 +102,12 @@ export const QuestionProvider = ({ children }: QuestionProviderProps) => {
 
   const refreshQuestions = async () => {
     await fetchQuestions();
-    
+
     // Also refresh current question if needed
     if (currentQuestionId) {
       const question = await getQuestion(currentQuestionId);
       setCurrentQuestion(question);
-      
+
       // Refresh user bet
       if (user) {
         const bet = await getUserBetForQuestion(user.id, currentQuestionId);

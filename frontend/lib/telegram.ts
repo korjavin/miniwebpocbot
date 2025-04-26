@@ -1,3 +1,5 @@
+'use client';
+
 // Define the Telegram WebApp interface
 export interface TelegramWebApp {
   initData: string;
@@ -97,11 +99,11 @@ export async function verifyTelegramWebAppData(initData: string): Promise<boolea
       },
       body: JSON.stringify({ initData }),
     });
-    
+
     if (!response.ok) {
       throw new Error('Failed to verify Telegram data');
     }
-    
+
     const data = await response.json();
     return data.verified;
   } catch (error) {
@@ -129,15 +131,15 @@ export function setupMainButton(
   if (webApp) {
     const mainButton = webApp.MainButton;
     mainButton.setText(text);
-    
+
     if (color) {
       mainButton.color = color;
     }
-    
+
     if (textColor) {
       mainButton.textColor = textColor;
     }
-    
+
     mainButton.onClick(onClick);
     mainButton.show();
   }

@@ -1,3 +1,5 @@
+'use client';
+
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { getTelegramUser, isTelegramWebAppAvailable, verifyTelegramWebAppData, getTelegramWebApp } from '../lib/telegram';
 import { getUserByTelegramId, createUser, User } from '../lib/pocketbase';
@@ -47,7 +49,7 @@ export const UserProvider = ({ children }: UserProviderProps) => {
           setLoading(false);
           return;
         }
-        
+
         throw new Error('Not in a Telegram WebApp');
       }
 
@@ -70,14 +72,14 @@ export const UserProvider = ({ children }: UserProviderProps) => {
 
       // Get or create user in Pocketbase
       let pbUser = await getUserByTelegramId(telegramUser.id);
-      
+
       if (!pbUser) {
         // Create new user
-        const name = telegramUser.username || 
+        const name = telegramUser.username ||
                     `${telegramUser.first_name}${telegramUser.last_name ? ' ' + telegramUser.last_name : ''}`;
-        
+
         pbUser = await createUser(telegramUser.id, name);
-        
+
         if (!pbUser) {
           throw new Error('Failed to create user');
         }

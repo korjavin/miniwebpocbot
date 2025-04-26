@@ -91,6 +91,7 @@
 - ✅ GitHub Actions for CI
   - ✅ Create workflow file
   - ✅ Fix backend Dockerfile for CI
+  - ✅ Add "use client" directives for Next.js compatibility
   - ✅ Test workflow ready for execution
 
 ## Documentation
