@@ -2,7 +2,9 @@ version: '3'
 
 services:
   backend:
-    image: pocketbase/pocketbase:latest
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
     container_name: prediction-game-backend
     restart: unless-stopped
     ports:
