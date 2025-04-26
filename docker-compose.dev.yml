@@ -1,0 +1,44 @@
+version: '3'
+
+services:
+  backend:
+    image: pocketbase/pocketbase:latest
+    container_name: prediction-game-backend
+    restart: unless-stopped
+    ports:
+      - "8090:8090"
+    volumes:
+      - pb_data:/pb/pb_data
+      - ./backend/pb_hooks:/pb/pb_hooks
+    environment:
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - PUBLIC_WEBAPP_URL=${PUBLIC_WEBAPP_URL}
+    networks:
+      - prediction-game-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: prediction-game-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - NEXT_PUBLIC_PB_URL=${NEXT_PUBLIC_PB_URL}
+      - PUBLIC_WEBAPP_URL=${PUBLIC_WEBAPP_URL}
+    depends_on:
+      - backend
+    networks:
+      - prediction-game-network
+
+networks:
+  prediction-game-network:
+    driver: bridge
+
+volumes:
+  pb_data:
+    driver: local
