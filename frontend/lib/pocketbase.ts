@@ -121,7 +121,8 @@ export async function getUserBetForQuestion(userId: string, questionId: string):
     return record as unknown as Bet;
   } catch (error) {
     // Not found is expected if user hasn't bet yet
-    if (!(error as any).status === 404) {
+    const errorResponse = error as { status?: number };
+    if (!errorResponse.status || errorResponse.status !== 404) {
       console.error(`Error fetching bet for user ${userId} on question ${questionId}:`, error);
     }
     return null;

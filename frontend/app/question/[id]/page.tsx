@@ -145,7 +145,7 @@ export default function QuestionPage() {
       <div className="min-h-screen p-4 max-w-md mx-auto">
         <div className="bg-red-50 p-6 rounded-lg text-center">
           <h2 className="text-xl font-semibold mb-2 text-red-500">Question Not Found</h2>
-          <p className="mb-4">The question you're looking for doesn't exist or has been closed.</p>
+          <p className="mb-4">The question you&apos;re looking for doesn&apos;t exist or has been closed.</p>
           <Link href="/" className="text-blue-600 hover:underline">
             Back to Questions
           </Link>
